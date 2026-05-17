@@ -1,13 +1,12 @@
 """
 cri_trend_lcc_breakeven.py  (Final revision for IEEE Access 1-column)
 
-Target printed font sizes (scale = 3.5/9 ≈ 0.389 for 9-inch wide fig):
-  title:       22 pt → 8.6 pt  (≈caption)
-  axis label:  19 pt → 7.4 pt  (above 6 pt minimum)
-  tick label:  17 pt → 6.6 pt
-  legend:      15 pt → 5.8 pt  (compact but legible)
-
-Key fix: use subplots_adjust or pad in savefig to prevent ylabel clipping.
+Scale: figsize 9×5.5, printed width ≈3.5 inch → scale ≈0.389
+Printed font targets:
+  title:       20 pt → ≈7.8 pt
+  axis label:  17 pt → ≈6.6 pt  (1줄 레이블 기준)
+  tick label:  16 pt → ≈6.2 pt
+  legend:      15 pt → ≈5.8 pt
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,10 +18,10 @@ mpl.rcParams.update({
     'axes.titlesize':    20,
     'axes.titleweight':  'bold',
     'axes.titlepad':     6,
-    'axes.labelsize':    18,
+    'axes.labelsize':    17,
     'xtick.labelsize':   16,
     'ytick.labelsize':   16,
-    'legend.fontsize':   14,
+    'legend.fontsize':   15,
     'lines.linewidth':   2.5,
     'figure.dpi':        150,
 })
@@ -62,19 +61,19 @@ ax.grid(True, linestyle='--', alpha=0.6)
 ax.legend(loc='upper right', framealpha=0.9,
           handlelength=1.8, labelspacing=0.25, borderpad=0.5)
 
-fig.savefig('/mnt/user-data/outputs/CRI_Trend.png', dpi=300, bbox_inches='tight')
+fig.savefig('CRI_Trend.png', dpi=300, bbox_inches='tight')
 print("Saved: CRI_Trend.png")
 plt.close()
 
 # =============================================================
-# 2. LCC Break-even Chart
+# 2. LCC Break-even Chart  (Fig. 4 수정: Y축 레이블 1줄)
 # =============================================================
 years = np.arange(0, 31)
 lcc_A = 100 + 15 * years + 0.5  * years**2
 lcc_C = 200 +  5 * years + 0.05 * years**2
 
 fig2, ax2 = plt.subplots(figsize=(9, 5.5))
-fig2.subplots_adjust(left=0.15, right=0.97, top=0.91, bottom=0.13)
+fig2.subplots_adjust(left=0.14, right=0.97, top=0.91, bottom=0.13)
 
 ax2.plot(years, lcc_A, 'r-o', label='Scenario A (Traditional Baseline)', markersize=5)
 ax2.plot(years, lcc_C, 'g-s', label='Scenario C (Proposed AI-DB)',       markersize=5, lw=3.0)
@@ -91,12 +90,12 @@ ax2.annotate(
 
 ax2.set_title('30-Year Cumulative Life Cycle Cost (LCC) Analysis')
 ax2.set_xlabel('Operational Time (Years)')
-ax2.set_ylabel('Cumulative Total LCC\n(Relative Scale)')   # 줄 바꿈으로 잘림 방지
+ax2.set_ylabel('Cumulative Total LCC (Relative Scale)')   # ← 1줄
 ax2.set_xlim(0, 30)
 ax2.set_ylim(0, 800)
 ax2.grid(True, linestyle='--', alpha=0.6)
 ax2.legend(loc='upper left')
 
-fig2.savefig('/mnt/user-data/outputs/LCC_Breakeven.png', dpi=300, bbox_inches='tight')
+fig2.savefig('LCC_Breakeven.png', dpi=300, bbox_inches='tight')
 print("Saved: LCC_Breakeven.png")
 plt.close()
