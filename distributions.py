@@ -62,5 +62,5 @@ axes[2].grid(True, linestyle=':', alpha=0.6)
 axes[2].text(1.4, 0.62, r'$\lambda=0.15$', fontsize=13,
              bbox=dict(facecolor='white', edgecolor='gray', alpha=0.8))
 
-fig.savefig('/mnt/user-data/outputs/Distributions.png', dpi=300, bbox_inches='tight')
+fig.savefig('Distributions.png', dpi=300, bbox_inches='tight')
 print("Saved: Distributions.png")
