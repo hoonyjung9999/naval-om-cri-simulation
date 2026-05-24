@@ -200,7 +200,7 @@ def main(n_iter: int = I_DEFAULT) -> dict:
     for key, r in results.items():
         ci  = f"[{r['lcc_p5']:6.1f},{r['lcc_p95']:7.1f}]"
         red = (base - r["lcc_median"]) / base * 100
-        tag = f"({red:+.1f}%)" if key != "A_Manual" else "  (baseline)"
+        tag = f"(-{red:.1f}%)" if key != "A_Manual" else "  (baseline)"
         print(f"  {SCENARIOS[key]['label']:<34} {r['lcc_median']:>9.1f}"
               f"  {ci:>21}  {r['cri_mean']:>6.3f}  {tag}")
     print("=" * 72)
