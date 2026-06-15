@@ -3,7 +3,7 @@
 # Manuscript: Access-2026-24786
 # "Handover-Induced Risk Peaks in Naval O&M: A CRI-Based Scenario Analysis"
 # Authors: Seunghoon Jung, Minwoo Lee
-# All values correspond to Table 2 in the manuscript.
+# All values correspond to Table 3 in the manuscript.
 
 # =============================================================
 # Simulation Structural Parameters
@@ -85,10 +85,12 @@ delta_ai_weights:
 #   → δ_AI = clip(0.333×0.55 + 0.333×0.65 + 0.333×0.60) ≈ 0.60
 #
 # Scenario C — Proposed AI-DB (optimistic, δ_AI = 0.95)
-#   ΔD ≈ 0.95  LSTM autoencoder; high recall, low false-positive rate
-#   ΔL ≈ 0.95  LLM-RAG provides real-time prescriptive guidance
-#   ΔC ≈ 0.95  AI-assisted checklist; near-complete adherence
-#   → δ_AI = clip(0.333×0.95 + 0.333×0.95 + 0.333×0.95) ≈ 0.95
+#   ΔD ≈ 0.95  LSTM autoencoder; high recall, low false-positive rate [32]
+#   ΔL ≈ 0.92  LLM-RAG provides real-time prescriptive guidance but
+#              query processing time prevents a perfect score [29]
+#   ΔC ≈ 0.97  AI-assisted checklist yields highest compliance among
+#              the three components [31]
+#   → δ_AI = clip(0.333×0.95 + 0.333×0.92 + 0.333×0.97) ≈ 0.95
 #
 # Scenario D — AI Only, No Zero-Trust (δ_AI = 0.80)
 #   ΔD ≈ 0.85  LSTM detection without ZT continuity guarantee
@@ -119,8 +121,8 @@ delta_ai_tiers:
     delta_ai: 0.95
     tier: optimistic
     delta_D: 0.95
-    delta_L: 0.95
-    delta_C: 0.95
+    delta_L: 0.92
+    delta_C: 0.97
   scenario_D_ai_only:
     delta_ai: 0.80
     tier: moderate-optimistic
