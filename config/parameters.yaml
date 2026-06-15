@@ -1,0 +1,177 @@
+# Naval O&M CRI-Based Scenario Analysis
+# Parameter Configuration File
+# Manuscript: Access-2026-24786
+# "Handover-Induced Risk Peaks in Naval O&M: A CRI-Based Scenario Analysis"
+# Authors: Seunghoon Jung, Minwoo Lee
+# All values correspond to Table 2 in the manuscript.
+
+# =============================================================
+# Simulation Structural Parameters
+# =============================================================
+simulation:
+  horizon_years: 30          # N: simulation horizon (yr) [1]
+  horizon_months: 360        # T_MAX: monthly steps (= N * 12)
+  iterations: 10000          # I: Monte Carlo iterations [11]
+  seed: 42                   # PRNG seed for reproducibility
+  rotation_cycle_months: 18  # T: crew rotation cycle (mo) [4],[5]
+  discount_rate: 0.03        # r: annual discount rate [13],[33]
+
+# =============================================================
+# Stochastic Variable Distributions
+# =============================================================
+distributions:
+  # CVE/threat arrival: Poisson process [10],[19]
+  threat_arrival:
+    model: Poisson
+    lambda_per_year: 0.15    # λ: annual CVE arrival rate
+    lambda_per_month: 0.0125 # λ/12: scaled to monthly step
+
+  # Human Error Probability at rotation: Beta distribution [12],[17]
+  hep:
+    model: Beta
+    alpha: 2                 # α_HEP: shape parameter
+    beta: 5                  # β_HEP: shape parameter
+    mean: 0.286              # E[HEP] = α/(α+β) = 2/7
+    mode: 0.200              # mode = (α-1)/(α+β-2) = 1/5
+
+  # Loss severity upon CRI threshold exceedance: Lognormal [13],[15]
+  loss_severity:
+    model: Lognormal
+    mu: 4.0                  # μ_L: location parameter (relative scale)
+    sigma: 1.2               # σ_L: scale parameter
+
+# =============================================================
+# CRI (Composite Risk Index) Parameters  — Eq. (10)
+# =============================================================
+cri:
+  alpha: 0.20    # cyber-term weight; saturating term ≤ 0.20 at late life
+  beta: 2.50     # human-term weight; allows CRI > τ_th at low δ_AI
+  w: 1.0         # operational criticality weight (1.0 = high-criticality)
+  tau_threshold: 0.85   # τ_th: critical failure threshold (MIL-STD-882E) [34]
+  eta_learn: 0.10       # η_learn: proficiency recovery rate (mo⁻¹)
+                        # ≈ 2.9 mo full recovery from mean HEP=0.286 [6]
+
+# =============================================================
+# δ_AI Composite Weights  — Eq. (11)
+# δ_AI = clip(w1·ΔD + w2·ΔL + w3·ΔC, 0, 1)
+# =============================================================
+delta_ai_weights:
+  w1: 0.333   # weight for ΔD: anomaly-detection recall improvement
+  w2: 0.333   # weight for ΔL: decision-to-action latency reduction
+  w3: 0.333   # weight for ΔC: procedural compliance improvement
+  # Equal weighting (1/3, 1/3, 1/3) reflects absence of empirical
+  # fleet data to differentiate component contributions; sensitivity
+  # to this choice is assessed in Section VI-D of the manuscript.
+
+# =============================================================
+# δ_AI Reference Tier Estimates per Scenario  — Section IV-B
+#
+# Each tier is derived from the three observable components
+# of Eq. (11): ΔD (detection quality), ΔL (latency reduction),
+# ΔC (compliance improvement). Values represent conservative,
+# moderate, and optimistic estimates consistent with published
+# ranges for comparable O&M support technologies.
+#
+# Scenario A — Manual Baseline (conservative, δ_AI = 0.15)
+#   ΔD ≈ 0.10  no automated detection; manual log search only
+#   ΔL ≈ 0.20  minor latency reduction from digitized checklists
+#   ΔC ≈ 0.15  limited compliance support; binder-based procedures
+#   → δ_AI = clip(0.333×0.10 + 0.333×0.20 + 0.333×0.15) ≈ 0.15
+#
+# Scenario B — Centralized DB (moderate, δ_AI = 0.60)
+#   ΔD ≈ 0.55  searchable digital logs reduce missed anomalies
+#   ΔL ≈ 0.65  faster retrieval vs. paper binders
+#   ΔC ≈ 0.60  structured digital checklists improve adherence
+#   → δ_AI = clip(0.333×0.55 + 0.333×0.65 + 0.333×0.60) ≈ 0.60
+#
+# Scenario C — Proposed AI-DB (optimistic, δ_AI = 0.95)
+#   ΔD ≈ 0.95  LSTM autoencoder; high recall, low false-positive rate
+#   ΔL ≈ 0.95  LLM-RAG provides real-time prescriptive guidance
+#   ΔC ≈ 0.95  AI-assisted checklist; near-complete adherence
+#   → δ_AI = clip(0.333×0.95 + 0.333×0.95 + 0.333×0.95) ≈ 0.95
+#
+# Scenario D — AI Only, No Zero-Trust (δ_AI = 0.80)
+#   ΔD ≈ 0.85  LSTM detection without ZT continuity guarantee
+#   ΔL ≈ 0.80  AI guidance available but SPOF risk present
+#   ΔC ≈ 0.75  compliance supported but node-compromise degrades it
+#   → δ_AI = clip(0.333×0.85 + 0.333×0.80 + 0.333×0.75) ≈ 0.80
+#
+# Scenario E — Zero-Trust Only, No AI (δ_AI = 0.30)
+#   ΔD ≈ 0.20  no automated detection; manual anomaly identification
+#   ΔL ≈ 0.35  ZT continuity ensures record availability; no AI triage
+#   ΔC ≈ 0.35  tamper-proof logs improve auditability; no AI guidance
+#   → δ_AI = clip(0.333×0.20 + 0.333×0.35 + 0.333×0.35) ≈ 0.30
+# =============================================================
+delta_ai_tiers:
+  scenario_A_manual:
+    delta_ai: 0.15
+    tier: conservative
+    delta_D: 0.10
+    delta_L: 0.20
+    delta_C: 0.15
+  scenario_B_db:
+    delta_ai: 0.60
+    tier: moderate
+    delta_D: 0.55
+    delta_L: 0.65
+    delta_C: 0.60
+  scenario_C_ai_db:
+    delta_ai: 0.95
+    tier: optimistic
+    delta_D: 0.95
+    delta_L: 0.95
+    delta_C: 0.95
+  scenario_D_ai_only:
+    delta_ai: 0.80
+    tier: moderate-optimistic
+    delta_D: 0.85
+    delta_L: 0.80
+    delta_C: 0.75
+  scenario_E_zt_only:
+    delta_ai: 0.30
+    tier: conservative-moderate
+    delta_D: 0.20
+    delta_L: 0.35
+    delta_C: 0.35
+
+# =============================================================
+# Scenario Definitions  — Section IV-B
+# =============================================================
+scenarios:
+  A_Manual:
+    delta_ai: 0.15
+    capex: 1.0
+    p_comp: 0.00
+    label: "Scenario A (Manual Baseline)"
+
+  B_DB:
+    delta_ai: 0.60
+    capex: 1.2
+    p_comp: 0.20
+    label: "Scenario B (Centralized DB)"
+
+  C_AI_DB:
+    delta_ai: 0.95
+    capex: 2.0
+    p_comp: 0.00
+    label: "Scenario C (Proposed AI-DB)"
+
+  D_AI_only:
+    delta_ai: 0.80
+    capex: 1.7
+    p_comp: 0.10
+    label: "Scenario D (AI Only, No Zero-Trust)"
+
+  E_ZT_only:
+    delta_ai: 0.30
+    capex: 1.5
+    p_comp: 0.00
+    label: "Scenario E (Zero-Trust Only, No AI)"
+
+# =============================================================
+# Routine Maintenance Cost (relative scale)
+# =============================================================
+costs:
+  c_maint: 1.0   # C_maint: routine maintenance cost per month
+                 # (relative unit; absolute mapping requires
+                 #  vessel-class-specific calibration)
