@@ -4,7 +4,7 @@ Replication code for:
 
 > Jung, S. and Lee, M. (2026).
 > **"Handover-Induced Risk Peaks in Naval O&M: A CRI-Based Scenario Analysis."**
-> *IEEE Access.* Manuscript ID: Access-2026-15865.
+> *IEEE Access.* Manuscript ID: Access-2026-24786.
 
 ---
 
@@ -55,7 +55,7 @@ python sensitivity.py --points 6 --n-iter 300            # fast variant
 
 ## Parameters
 
-All parameters match **Table II** in the paper:
+All parameters match **Table III** in the paper:
 
 | Symbol | Value | Description |
 |--------|-------|-------------|
@@ -89,7 +89,7 @@ in §VII-C: at each rotation, scenarios without a zero-trust continuity
 layer (A, B, D) face a non-zero probability of central-node compromise,
 in which case the effective δ_AI for that handover window collapses to 0.
 This generates the wider risk-tail variance seen in Scenarios B and D
-(see footnote of Table IV).
+(see footnote of Table VI).
 
 ---
 
